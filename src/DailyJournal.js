@@ -1,18 +1,27 @@
 import React, { useState, useEffect } from "react";
 import { EntryForm } from "./components/EntryForm";
 import { EntryList } from "./components/EntryList";
-import { addEntry, deleteEntry, getEntries, getEntryById, updateEntry } from "./components/EntryManager";
+import { addEntry, deleteEntry, getEntries, getEntryById, updateEntry, getTags } from "./components/EntryManager";
 import { getMoods } from "./components/mood/MoodManager";
 
 export const DailyJournal = () => {
   const [entries, setEntries] = useState([])
   const [moods, setMoods] = useState([])
   const [entry, setEntry] = useState({})
+  const [tags, setTags] = useState([])
 
   useEffect(() => {
     getAllEntries()
     getMoods().then(moodsData => setMoods(moodsData))
   }, [])
+  useEffect(
+    () => {
+      getTags()
+        .then((data) => {
+          setTags(data)
+        })
+    }, []
+  )
 
   const getAllEntries = () => {
     getEntries().then(entriesData => setEntries(entriesData))
@@ -30,6 +39,7 @@ export const DailyJournal = () => {
   const onFormSubmit = (entryData) => {
     console.log("submit", entryData)
     if (entryData.id) {
+      debugger
       updateEntry(entryData).then(getAllEntries)
     } else {
       addEntry(entryData).then(getAllEntries)
@@ -45,7 +55,7 @@ export const DailyJournal = () => {
     <div className="DailyJournal container">
       <div className="columns">
         <div className="column">
-          <EntryForm entry={entry} moods={moods} onFormSubmit={onFormSubmit} />
+          <EntryForm tags={tags} entry={entry} moods={moods} onFormSubmit={onFormSubmit} />
         </div>
         <div className="column">
           <EntryList
